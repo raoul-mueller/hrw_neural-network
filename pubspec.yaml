@@ -1,0 +1,11 @@
+name: neural_network
+description: A feed forward neural network
+version: 1.0.0
+
+environment:
+  sdk: '>=2.18.0 <3.0.0'
+
+dev_dependencies:
+  analyzer: ^5.1.0
+  build_runner: ^2.2.1
+  build_web_compilers: ^3.2.6

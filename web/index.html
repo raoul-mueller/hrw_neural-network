@@ -1,0 +1,169 @@
+<!--suppress HtmlFormInputWithoutLabel -->
+<!DOCTYPE html>
+<html lang='en' class='p-5'>
+  <head>
+    <meta charset='UTF-8'>
+    <title>Neuroinformatik Projekt - Raoul Müller</title>
+    <link
+        href='https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css'
+        rel='stylesheet'
+        integrity='sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC'
+        crossorigin='anonymous'
+    >
+    <!--suppress HtmlUnknownTarget -->
+    <script defer src='main.dart.js'></script>
+    <style> * {
+      box-sizing: border-box;
+    }
+
+    h2 {
+      margin-top: 2.5rem;
+    }
+
+    h3 {
+      margin-top: 1.5rem;
+    }
+
+    /*noinspection CssUnusedSymbol*/
+    .error {
+      border-color: #df4759;
+      color: #df4759;
+    } </style>
+  </head>
+  <body class='m-auto bg-light' style='max-width: 1098px;'>
+    <h1>Feed-Forward-Neural-Network mit Backpropagation</h1>
+    <p class='lead'>Hochschule Ruhr West - Modul Neuroinformatik - WS22/23 - Raoul Müller</p>
+    <!---->
+    <!--Introduction-->
+    <!---->
+    <p> An der Hochschule Ruhr West bietet der Bachelorstudiengang "Angewandte Informatik" den Studierenden im fünften
+      Fachsemester das Wahlmodul "Neuroinformatik" an. Ziel des Moduls ist, dass die Studierenden die Grundlagen der
+      Neuroinformatik verstehen und sie praxisorientiert anwenden können. </p>
+    <p> Die Prüfungsleistung besteht in diesem Modul im Wesentlichen in der Implementierung eines neuronalen Netzwerks
+      und eines zugehörigen Lernalgorithmus zu implementieren. Als neuronales Netzwerk soll dabei ein Feed Forward
+      Neural Network verwendet werden, der Lernalgorithmus soll mittels Backpropagation umgesetzt werden. </p>
+    <p> Bei der Implementierung ist darauf zu achten, dass keine Bibliotheken eingesetzt werden dürfen, welche die
+      Implementierung des Netzwerks und des Lernalgorithmus vereinfachen würden. Das gilt insbesondere für
+      Mathematik-Bibliotheken. </p>
+    <p> Das implementierte Projekt soll in einer mündlichen Prüfung vorgestellt werden. Im Rahmen der mündlichen Prüfung
+      sollen das implementierte Projekt XOR-Problem lösen und den Sinus für Eingangswerte im Intervall [0, 7]
+      vorhersagen können. </p>
+
+    <hr class='my-5' />
+
+    <!---->
+    <!--Blueprint-->
+    <!---->
+    <div id='blueprint' class='mt-5'>
+      <div class='d-flex gap-1 my-2 align-items-end'>
+        <h2 class='my-0'>Netzwerk entwerfen</h2>
+        <span class='flex-grow-1'></span>
+        <button id='example-blueprint-xor-button' class='btn btn-outline-primary'>XOR-Problem</button>
+        <button id='example-blueprint-sinus-button' class='btn btn-outline-primary'>Sinus im Intervall [0, 7]</button>
+      </div>
+      <div id='layers' class='card d-flex flex-row gap-1 my-2 p-1 overflow-scroll' style='height: 150px;'></div>
+      <div class='d-flex gap-1 my-2'>
+        <button id='reset-blueprint-button' class='btn btn-outline-danger'>Netzwerkentwurf zurücksetzen</button>
+        <span class='flex-grow-1'></span>
+        <button id='add-dense-layer-button' class='btn btn-outline-primary'>Dense Layer hinzufügen</button>
+        <button id='add-sigmoid-layer-button' class='btn btn-outline-primary'>Sigmoid Layer hinzufügen</button>
+        <button id='add-relu-layer-button' class='btn btn-outline-primary'>ReLU Layer hinzufügen</button>
+        <button id='finalize-blueprint-button' class='btn btn-outline-success'>Netzwerkentwurf abschließen</button>
+      </div>
+    </div>
+    <div id='network' class='mt-5 d-none'>
+      <h2 class='mt-0'>Netzwerk untersuchen</h2>
+      <div class='d-flex gap-1 my-2 align-items-end'>
+        <h3>Schematische Darstellung</h3>
+        <span class='flex-grow-1'></span>
+        <button id='reset-network-button' class='btn btn-outline-danger'>Alles zurücksetzen</button>
+      </div>
+      <div class='d-flex justify-content-center'>
+        <div class='card p-5'>
+          <div id='layer-labels' class='d-flex mb-3'></div>
+          <canvas id='canvas' style='max-width: 1000px;' width='2000' height='1000'></canvas>
+        </div>
+      </div>
+      <h3>Gewichte</h3>
+      <ul id='weights'></ul>
+      <div class='d-flex gap-1 my-2 align-items-end'>
+        <h2 class='mb-0'>Netzwerk trainieren</h2>
+        <span class='flex-grow-1'></span>
+        <button id='example-training-xor-button' class='btn btn-outline-primary'>XOR-Problem</button>
+        <button id='example-training-sinus-button' class='btn btn-outline-primary'>Sinus im Intervall [0, 7]</button>
+      </div>
+      <div class='input-group'>
+        <span class='input-group-text col-3'>Anzahl Durchläufe</span> <input
+          id='train-epochs' class='form-control' type='number' min='1'
+      ></div>
+      <div class='input-group'>
+        <span class='input-group-text col-3'>Lernrate</span> <input
+          id='train-learning-rate' class='form-control' type='number' min='0' max='1' step='0.05'
+      ></div>
+      <div class='input-group align-items-center'>
+        <span class='input-group-text col-3'>Fehlerfunktion</span> <input
+          id='distance-cost-function' class='mx-3' type='radio' name='cost-function' value='DistanceCostFunction'
+      > <label for='distance-cost-function'>Distance</label> <input
+          id='squared-distance-cost-function'
+          class='mx-3'
+          type='radio'
+          name='cost-function'
+          value='SquaredDistanceCostFunction'
+      > <label for='squared-distance-cost-function'> Squared Distance</label></div>
+      <div class='input-group'>
+        <span class='input-group-text col-3'>Trainingsdaten</span> <textarea
+          id='train-inputs'
+          class='form-control flex-grow-1'
+          style='font-family: monospace; white-space: pre; overflow-wrap: normal; overflow-x: scroll;'
+          rows='3'
+      ></textarea> <textarea
+          id='train-outputs'
+          class='form-control flex-grow-1'
+          style='font-family: monospace; white-space: pre; overflow-wrap: normal; overflow-x: scroll;'
+          rows='3'
+      ></textarea></div>
+      <div class='input-group'>
+        <span class='input-group-text col-3'>Testdaten</span> <textarea
+          id='test-inputs'
+          class='form-control flex-grow-1'
+          style='font-family: monospace; white-space: pre; overflow-wrap: normal; overflow-x: scroll;'
+          rows='3'
+      ></textarea> <textarea
+          id='test-outputs'
+          class='form-control flex-grow-1'
+          style='font-family: monospace; white-space: pre; overflow-wrap: normal; overflow-x: scroll;'
+          rows='3'
+      ></textarea></div>
+      <div class='progress mt-2' style='height: 0.5rem;'>
+        <div id='train-progress' class='progress-bar bg-success' role='progressbar'></div>
+      </div>
+      <div class='input-group'>
+        <span id='train-output' class='input-group-text flex-grow-1'></span>
+        <button id='train-network-button' class='btn btn-success'>Netzwerk trainieren</button>
+      </div>
+      <h2>Netzwerk ausprobieren</h2>
+      <div class='input-group'>
+        <textarea
+            id='predict-inputs'
+            class='form-control flex-grow-1'
+            style='font-family: monospace; white-space: pre; overflow-wrap: normal; overflow-x: scroll;'
+            rows='3'
+        ></textarea> <textarea
+          id='predict-outputs'
+          class='form-control flex-grow-1'
+          style='font-family: monospace; white-space: pre; overflow-wrap: normal; overflow-x: scroll;'
+          rows='3'
+          disabled
+      ></textarea></div>
+      <div class='d-flex justify-content-end mt-2'>
+        <button id='predict-button' class='btn btn-success'>Vorhersage treffen</button>
+      </div>
+    </div>
+    <hr class='my-5' />
+    <h2>Selbstständigkeitserklärung</h2>
+    <p> Hiermit erkläre ich, dass das vorliegende Projekt selbstständig angefertigt wurde. Nur ausdrücklich im Code
+      benannte Quellen und Hilfsmittel sind verwendet worden. Die gegenwärtige Fassung oder eine andere dieses Projekts
+      lag bis dato noch in keiner anderen wissenschaftlichen Fachhochschule oder der Hochschule Ruhr West vor. Sollten
+      Stellen aus anderen Quellen entnommen worden sein, sind diese kenntlich gemacht und deren Herkunft angegeben. </p>
+  </body>
+</html>

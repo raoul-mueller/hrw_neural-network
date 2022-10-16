@@ -1,0 +1,12 @@
+# intellij
+../../.idea
+*.iml
+
+# macos
+.DS_Store
+
+# dart
+.dart_tool/
+
+# global
+build
