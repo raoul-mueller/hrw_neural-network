@@ -252,9 +252,9 @@ void onExampleBlueprintXorButtonClicked(final Event event) {
 void onExampleBlueprintSinusButtonClicked(final Event event) {
   blueprint!
     ..clear()
-    ..add(DenseLayer.random(n_inputs: 1, n_outputs: 6))
+    ..add(DenseLayer.random(n_inputs: 1, n_outputs: 4))
     ..add(SigmoidLayer())
-    ..add(DenseLayer.random(n_inputs: 6, n_outputs: 1));
+    ..add(DenseLayer.random(n_inputs: 4, n_outputs: 1));
   showBlueprint();
 }
 
